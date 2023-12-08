@@ -1,8 +1,8 @@
-﻿  glm.cpp
-  engine.cpp
+﻿  engine.cpp
   main.cpp
-engine.obj : error LNK2001: unresolved external symbol glfwTerminate
-engine.obj : error LNK2001: unresolved external symbol glfwInit
-engine.obj : error LNK2001: unresolved external symbol glfwCreateWindow
-engine.obj : error LNK2001: unresolved external symbol glfwWindowHint
-C:\Users\jules\Desktop\Dev\voxel_engine\x64\Release\voxel_engine.exe : fatal error LNK1120: 4 unresolved externals
+  Generating code
+  5 of 15 functions (33.3%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    3 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  voxel_engine.vcxproj -> C:\Users\jules\Desktop\Dev\voxel_engine\x64\Release\voxel_engine.exe

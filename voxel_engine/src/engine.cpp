@@ -4,7 +4,7 @@
 Engine::Engine() {
 
 	if (debugMode) {
-		std::cout << "Making a graphics engine\n";
+		std::cout << "Creating Engine\n";
 	}
 	
 	build_glfw_window();
@@ -22,14 +22,14 @@ void Engine::build_glfw_window() {
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
 	//GLFWwindow* glfwCreateWindow (int width, int height, const char *title, GLFWmonitor *monitor, GLFWwindow *share)
-	if (window = glfwCreateWindow(width, height, "ID Tech 12", nullptr, nullptr)) {
+	if (window = glfwCreateWindow(width, height, "Voxel Engine", nullptr, nullptr)) {
 		if (debugMode) {
-			std::cout << "Successfully made a glfw window called \"ID Tech 12\", width: " << width << ", height: " << height << '\n';
+			std::cout << "Window Created\n";
 		}
 	}
 	else {
 		if (debugMode) {
-			std::cout << "GLFW window creation failed\n";
+			std::cout << "Failed to create window\n";
 		}
 	}
 }
@@ -37,7 +37,7 @@ void Engine::build_glfw_window() {
 Engine::~Engine() {
 
 	if (debugMode) {
-		std::cout << "Goodbye see you!\n";
+		std::cout << "Destroying Engine\n";
 	}
 
 	//terminate glfw
