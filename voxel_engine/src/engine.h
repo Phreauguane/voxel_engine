@@ -1,6 +1,6 @@
 #pragma once
 #include <GLFW/glfw3.h>
-#include <vulkan/vulkan.hpp>
+#include "config.h"
 
 class Engine {
 
@@ -20,6 +20,12 @@ private:
 	int height{ 480 };
 	GLFWwindow* window{ nullptr };
 
+	//vulkan instance
+	vk::Instance instance{ nullptr };
+
 	//glfw setup
 	void build_glfw_window();
+
+	//create instance
+	void make_instance();
 };

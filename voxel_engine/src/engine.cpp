@@ -1,16 +1,20 @@
 #include "engine.h"
-#include <iostream>
+#include "instance.h"
 
-Engine::Engine() {
+Engine::Engine()
+{
 
 	if (debugMode) {
 		std::cout << "Creating Engine\n";
 	}
 	
 	build_glfw_window();
+
+	make_instance();
 }
 
-void Engine::build_glfw_window() {
+void Engine::build_glfw_window()
+{
 
 	//initialize glfw
 	glfwInit();
@@ -34,7 +38,13 @@ void Engine::build_glfw_window() {
 	}
 }
 
-Engine::~Engine() {
+void Engine::make_instance()
+{
+	instance = vkInit::make_instance(debugMode, "Voxel Engine");
+}
+
+Engine::~Engine()
+{
 
 	if (debugMode) {
 		std::cout << "Destroying Engine\n";
