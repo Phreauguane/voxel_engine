@@ -140,6 +140,7 @@
     <ClInclude Include="src\config.h" />
     <ClInclude Include="src\engine.h" />
     <ClInclude Include="src\instance.h" />
+    <ClInclude Include="src\logging.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

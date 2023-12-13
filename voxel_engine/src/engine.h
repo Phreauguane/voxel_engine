@@ -21,11 +21,20 @@ private:
 	GLFWwindow* window{ nullptr };
 
 	//vulkan instance
-	VkInstance instance{ nullptr };
+	vk::Instance instance{ nullptr };
+
+	//debug callback
+	vk::DebugUtilsMessengerEXT debugMessenger{ nullptr };
+
+	//dynamic instance dispatcher
+	vk::DispatchLoaderDynamic dldi;
 
 	//glfw setup
 	void build_glfw_window();
 
 	//create instance
 	void make_instance();
+
+	//debug messenger
+	void make_debug_messenger();
 };

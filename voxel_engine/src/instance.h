@@ -3,7 +3,85 @@
 
 namespace vkInit
 {
-	VkInstance make_instance(bool debug, const char* applicationName)
+	bool supported(std::vector<const char*>& extensions, std::vector<const char*>& layers, bool debug)
+	{
+		std::vector<vk::ExtensionProperties> supportedExtensions = vk::enumerateInstanceExtensionProperties();
+
+		if (debug)
+		{
+			std::cout << "Supported extensions:\n";
+			for (vk::ExtensionProperties extension : supportedExtensions)
+			{
+				std::cout << '\t' << extension.extensionName << '\n';
+			}
+		}
+
+		//check extension support
+		bool found;
+		for (const char* extension : extensions)
+		{
+			found = false;
+			for (vk::ExtensionProperties supportedExtension : supportedExtensions)
+			{
+				if (strcmp(supportedExtension.extensionName, extension) == 0)
+				{
+					found = true;
+					if (debug)
+					{
+						std::cout << "Extension \"" << extension << "\" is supported\n";
+					}
+				}
+			}
+			if (!found)
+			{
+				if (debug)
+				{
+					std::cout << "Extension \"" << extension << "\" is not supported\n";
+				}
+				return false;
+			}
+		}
+
+		std::vector<vk::LayerProperties> supportedLayers = vk::enumerateInstanceLayerProperties();
+
+		if (debug)
+		{
+			std::cout << "Supported layers:\n";
+			for (vk::LayerProperties layer : supportedLayers)
+			{
+				std::cout << '\t' << layer.layerName << '\n';
+			}
+		}
+
+		//check layer support
+		for (const char* layer : layers)
+		{
+			found = false;
+			for (vk::LayerProperties supportedLayer : supportedLayers)
+			{
+				if (strcmp(supportedLayer.layerName, layer) == 0)
+				{
+					found = true;
+					if (debug)
+					{
+						std::cout << "Layer \"" << layer << "\" is supported\n";
+					}
+				}
+			}
+			if (!found)
+			{
+				if (debug)
+				{
+					std::cout << "Layer \"" << layer << "\" is not supported\n";
+				}
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	vk::Instance make_instance(bool debug, const char* applicationName)
 	{
 		if (debug)
 		{
@@ -12,9 +90,7 @@ namespace vkInit
 		
 		//getting latest supported version
 		uint32_t version{ 0 };
-		uint32_t extCount{ 0 };
 
-		vkEnumerateInstanceExtensionProperties(nullptr, &extCount, nullptr);
 		vkEnumerateInstanceVersion(&version);
 		if (debug)
 		{
@@ -23,7 +99,6 @@ namespace vkInit
 				<< VK_API_VERSION_MINOR(version)   << '.'
 				<< VK_API_VERSION_PATCH(version)   << '.'
 				<< VK_API_VERSION_VARIANT(version) << '\n';
-			std::cout << "Extension count: " << extCount << '\n';
 		}
 		
 		//using version 1.0.0
@@ -51,6 +126,11 @@ namespace vkInit
 
 		if (debug)
 		{
+			extensions.push_back("VK_EXT_debug_utils");
+		}
+
+		if (debug)
+		{
 			std::cout << "Extensions to be requested:\n";
 
 			for (const char* ext : extensions)
@@ -59,10 +139,21 @@ namespace vkInit
 			}
 		}
 
+		std::vector<const char*> layers;
+		if (debug)
+		{
+			layers.push_back("VK_LAYER_KHRONOS_validation");
+		}
+
+		if (!supported(extensions, layers, debug))
+		{
+			return nullptr;
+		}
+
 		vk::InstanceCreateInfo createInfo = vk::InstanceCreateInfo(
 			vk::InstanceCreateFlags(),
 			&appInfo,
-			0, nullptr, //enabled layers
+			static_cast<uint32_t>(layers.size()), layers.data(), //enabled layers
 			static_cast<uint32_t>(extensions.size()), extensions.data() //enabled extensions
 		);
 
