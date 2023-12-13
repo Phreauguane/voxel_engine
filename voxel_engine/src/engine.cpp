@@ -13,19 +13,21 @@ Engine::Engine()
 	make_instance();
 }
 
+void Engine::init_engine()
+{
+	build_glfw_window();
+	make_instance();
+}
+
 void Engine::build_glfw_window()
 {
 
 	//initialize glfw
 	glfwInit();
 
-	//no default rendering client, we'll hook vulkan up
-	//to the window later
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-	//resizing breaks the swapchain, we'll disable it for now
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
-	//GLFWwindow* glfwCreateWindow (int width, int height, const char *title, GLFWmonitor *monitor, GLFWwindow *share)
 	if (window = glfwCreateWindow(width, height, "Voxel Engine", nullptr, nullptr)) {
 		if (debugMode) {
 			std::cout << "Window Created\n";
@@ -38,6 +40,14 @@ void Engine::build_glfw_window()
 	}
 }
 
+void Engine::main_loop()
+{
+	while (!glfwWindowShouldClose(window))
+	{
+		glfwPollEvents();
+	}
+}
+
 void Engine::make_instance()
 {
 	instance = vkInit::make_instance(debugMode, "Voxel Engine");
@@ -45,7 +55,11 @@ void Engine::make_instance()
 
 Engine::~Engine()
 {
+	//destroy instance
+	vkDestroyInstance(instance, nullptr);
 
+	//destroy window
+	glfwDestroyWindow(window);
 	if (debugMode) {
 		std::cout << "Destroying Engine\n";
 	}

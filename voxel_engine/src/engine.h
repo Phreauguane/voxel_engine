@@ -21,10 +21,16 @@ private:
 	GLFWwindow* window{ nullptr };
 
 	//vulkan instance
-	vk::Instance instance{ nullptr };
+	VkInstance instance{ nullptr };
+
+	//init engine
+	void init_engine();
 
 	//glfw setup
 	void build_glfw_window();
+
+	//main loop
+	void main_loop();
 
 	//create instance
 	void make_instance();
