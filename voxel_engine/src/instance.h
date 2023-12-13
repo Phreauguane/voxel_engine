@@ -13,20 +13,8 @@ namespace vkInit
 		//getting latest supported version
 		uint32_t version{ 0 };
 		uint32_t extCount{ 0 };
-		std::vector<VkExtensionProperties> extensions(extCount);
 
-		vkEnumerateInstanceExtensionProperties(nullptr, &extCount, extensions.data());
-
-		if (debug)
-		{
-			std::cout << "Available Extensions:\n";
-
-			for (const auto& extension : extensions)
-			{
-				std::cout << '\t' << extension.extensionName << '\n';
-			}
-		}
-
+		vkEnumerateInstanceExtensionProperties(nullptr, &extCount, nullptr);
 		vkEnumerateInstanceVersion(&version);
 		if (debug)
 		{
@@ -39,15 +27,15 @@ namespace vkInit
 		}
 		
 		//using version 1.0.0
-		VK_MAKE_VERSION(1, 0, 0);
+		version = VK_MAKE_VERSION(1, 0, 0);
 
-		VkApplicationInfo appInfo{};
-		appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-		appInfo.pApplicationName = applicationName;
-		appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
-		appInfo.pEngineName = "voxel_engine";
-		appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
-		appInfo.apiVersion = VK_API_VERSION_1_0;
+		vk::ApplicationInfo appInfo = vk::ApplicationInfo(
+			applicationName,
+			version,
+			"voxel engine",
+			version,
+			version
+		);
 
 		uint32_t glfwExtCount{ 0 };
 		const char** glfwExtentions;
@@ -59,22 +47,36 @@ namespace vkInit
 			std::cout << "GLFW Extension count: " << glfwExtCount << '\n';
 		}
 
-		VkInstanceCreateInfo createInfo{};
-		createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-		createInfo.pApplicationInfo = &appInfo;
-		createInfo.enabledExtensionCount = glfwExtCount;
-		createInfo.ppEnabledExtensionNames = glfwExtentions;
-		createInfo.enabledLayerCount = 0;
+		std::vector<const char*> extensions(glfwExtentions, glfwExtentions + glfwExtCount);
 
-		VkInstance instance;
-		VkResult result;
-
-		result = vkCreateInstance(&createInfo, nullptr, &instance);
-		if (result != VK_SUCCESS)
+		if (debug)
 		{
-			throw std::runtime_error("Failed to create instance");
+			std::cout << "Extensions to be requested:\n";
+
+			for (const char* ext : extensions)
+			{
+				std::cout << '\t' << ext << '\n';
+			}
 		}
 
-		return nullptr;
+		vk::InstanceCreateInfo createInfo = vk::InstanceCreateInfo(
+			vk::InstanceCreateFlags(),
+			&appInfo,
+			0, nullptr, //enabled layers
+			static_cast<uint32_t>(extensions.size()), extensions.data() //enabled extensions
+		);
+
+		try
+		{
+			return vk::createInstance(createInfo, nullptr);
+		}
+		catch (vk::SystemError err)
+		{
+			if (debug)
+			{
+				std::cout << "Failed to create Instance!\n";
+			}
+			return nullptr;
+		}
 	}
 }

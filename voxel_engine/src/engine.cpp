@@ -13,12 +13,6 @@ Engine::Engine()
 	make_instance();
 }
 
-void Engine::init_engine()
-{
-	build_glfw_window();
-	make_instance();
-}
-
 void Engine::build_glfw_window()
 {
 
@@ -37,14 +31,6 @@ void Engine::build_glfw_window()
 		if (debugMode) {
 			std::cout << "Failed to create window\n";
 		}
-	}
-}
-
-void Engine::main_loop()
-{
-	while (!glfwWindowShouldClose(window))
-	{
-		glfwPollEvents();
 	}
 }
 
