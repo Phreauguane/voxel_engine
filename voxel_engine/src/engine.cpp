@@ -1,6 +1,7 @@
 #include "engine.h"
 #include "instance.h"
 #include "logging.h"
+#include "device.h"
 
 Engine::Engine()
 {
@@ -13,7 +14,7 @@ Engine::Engine()
 
 	make_instance();
 
-	make_debug_messenger();
+	make_device();
 }
 
 void Engine::build_glfw_window()
@@ -41,11 +42,17 @@ void Engine::make_instance()
 {
 	instance = vkInit::make_instance(debugMode, "Voxel Engine");
 	dldi = vk::DispatchLoaderDynamic(instance, vkGetInstanceProcAddr);
+	if (debugMode)
+	{
+		debugMessenger = vkInit::make_debug_messenger(instance, dldi);
+	}
 }
 
-void Engine::make_debug_messenger()
+void Engine::make_device()
 {
-	debugMessenger = vkInit::make_debug_messenger(instance, dldi);
+	physicalDevice = vkInit::choose_physical_device(instance, debugMode);
+	device = vkInit::create_logical_device(physicalDevice, debugMode);
+	graphicsQueue = vkInit::get_queue(physicalDevice, device, debugMode);
 }
 
 Engine::~Engine()
@@ -58,7 +65,13 @@ Engine::~Engine()
 	glfwDestroyWindow(window);
 
 	//destroy messenger
-	instance.destroyDebugUtilsMessengerEXT(debugMessenger, nullptr, dldi);
+	if (debugMode)
+	{
+		instance.destroyDebugUtilsMessengerEXT(debugMessenger, nullptr, dldi);
+	}
+
+	//destroy device
+	device.destroy();
 
 	//destroy instance
 	instance.destroy();

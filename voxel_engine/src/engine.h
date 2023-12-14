@@ -1,5 +1,4 @@
 #pragma once
-#include <GLFW/glfw3.h>
 #include "config.h"
 
 class Engine {
@@ -20,14 +19,15 @@ private:
 	int height{ 480 };
 	GLFWwindow* window{ nullptr };
 
-	//vulkan instance
+	//vulkan instance variables
 	vk::Instance instance{ nullptr };
-
-	//debug callback
 	vk::DebugUtilsMessengerEXT debugMessenger{ nullptr };
-
-	//dynamic instance dispatcher
 	vk::DispatchLoaderDynamic dldi;
+
+	//vulkan device variables
+	vk::PhysicalDevice physicalDevice{ nullptr };
+	vk::Device device{ nullptr };
+	vk::Queue graphicsQueue{ nullptr };
 
 	//glfw setup
 	void build_glfw_window();
@@ -35,6 +35,6 @@ private:
 	//create instance
 	void make_instance();
 
-	//debug messenger
-	void make_debug_messenger();
+	//device setup
+	void make_device();
 };

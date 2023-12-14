@@ -1,7 +1,8 @@
 ﻿  engine.cpp
+C:\Users\jules\Desktop\Dev\voxel_engine\voxel_engine\src\device.h(188,22): warning C4267: 'argument': conversion from 'size_t' to 'uint32_t', possible loss of data
   Generating code
-  7 of 610 functions ( 1.1%) were compiled, the rest were copied from previous compilation.
-    4 functions were new in current compilation
-    9 functions had inline decision re-evaluated but remain unchanged
+  3 of 917 functions ( 0.3%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    4 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   voxel_engine.vcxproj -> C:\Users\jules\Desktop\Dev\voxel_engine\x64\Release\voxel_engine.exe

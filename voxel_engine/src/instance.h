@@ -12,7 +12,7 @@ namespace vkInit
 			std::cout << "Supported extensions:\n";
 			for (vk::ExtensionProperties extension : supportedExtensions)
 			{
-				std::cout << '\t' << extension.extensionName << '\n';
+				std::cout << "\t\"" << extension.extensionName << "\"\n";
 			}
 		}
 
@@ -49,7 +49,7 @@ namespace vkInit
 			std::cout << "Supported layers:\n";
 			for (vk::LayerProperties layer : supportedLayers)
 			{
-				std::cout << '\t' << layer.layerName << '\n';
+				std::cout << "\t\"" << layer.layerName << "\"\n";
 			}
 		}
 
@@ -135,7 +135,7 @@ namespace vkInit
 
 			for (const char* ext : extensions)
 			{
-				std::cout << '\t' << ext << '\n';
+				std::cout << "\t\"" << ext << "\"\n";
 			}
 		}
 

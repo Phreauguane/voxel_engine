@@ -35,5 +35,8 @@
     <ClInclude Include="src\logging.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\device.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
