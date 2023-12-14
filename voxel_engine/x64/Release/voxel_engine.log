@@ -1,8 +1,10 @@
 ﻿  engine.cpp
-C:\Users\jules\Desktop\Dev\voxel_engine\voxel_engine\src\device.h(188,22): warning C4267: 'argument': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\jules\Desktop\Dev\voxel_engine\voxel_engine\src\device.h(198,25): warning C4267: 'argument': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\jules\Desktop\Dev\voxel_engine\voxel_engine\src\device.h(197,22): warning C4267: 'argument': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\jules\Desktop\Dev\voxel_engine\voxel_engine\src\device.h(196,24): warning C4267: 'argument': conversion from 'size_t' to 'uint32_t', possible loss of data
   Generating code
-  3 of 917 functions ( 0.3%) were compiled, the rest were copied from previous compilation.
-    0 functions were new in current compilation
-    4 functions had inline decision re-evaluated but remain unchanged
+  103 of 1189 functions ( 8.7%) were compiled, the rest were copied from previous compilation.
+    59 functions were new in current compilation
+    140 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   voxel_engine.vcxproj -> C:\Users\jules\Desktop\Dev\voxel_engine\x64\Release\voxel_engine.exe

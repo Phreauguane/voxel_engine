@@ -23,11 +23,13 @@ private:
 	vk::Instance instance{ nullptr };
 	vk::DebugUtilsMessengerEXT debugMessenger{ nullptr };
 	vk::DispatchLoaderDynamic dldi;
+	vk::SurfaceKHR surface;
 
 	//vulkan device variables
 	vk::PhysicalDevice physicalDevice{ nullptr };
 	vk::Device device{ nullptr };
 	vk::Queue graphicsQueue{ nullptr };
+	vk::Queue presentQueue{ nullptr };
 
 	//glfw setup
 	void build_glfw_window();

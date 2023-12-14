@@ -14,31 +14,16 @@ namespace vkInit
 		}
 	};
 
-	void log_device_properties(vk::PhysicalDevice& device)
+	struct SwapChainSupportDetails
 	{
-		vk::PhysicalDeviceProperties props = device.getProperties();
-
-		std::cout << "Name: " << props.deviceName << '\n';
-
-		std::cout << "Type: ";
-		switch (props.deviceType)
-		{
-		case (vk::PhysicalDeviceType::eCpu):
-			std::cout << "CPU\n"; break;
-		case (vk::PhysicalDeviceType::eDiscreteGpu):
-			std::cout << "Discrete GPU\n"; break;
-		case (vk::PhysicalDeviceType::eIntegratedGpu):
-			std::cout << "Integrated GPU\n"; break;
-		case (vk::PhysicalDeviceType::eVirtualGpu):
-			std::cout << "Virtual GPU\n"; break;
-		default:
-			std::cout << "Unknown\n"; break;
-		}
-	}
+		vk::SurfaceCapabilitiesKHR capabilities;
+		std::vector<vk::SurfaceFormatKHR> formats;
+		std::vector<vk::PresentModeKHR> presentModes;
+	};
 
 	bool checkDeviceExtensionSupport(
-		const vk::PhysicalDevice& device, 
-		const std::vector<const char*>& requestedExtensions, 
+		const vk::PhysicalDevice& device,
+		const std::vector<const char*>& requestedExtensions,
 		const bool& debug)
 	{
 		std::set<std::string> requiredExtensions(requestedExtensions.begin(), requestedExtensions.end());
@@ -106,7 +91,7 @@ namespace vkInit
 		{
 			std::cout << "Choosing physical device...\n";
 		}
-		
+
 		std::vector<vk::PhysicalDevice> availableDevices = instance.enumeratePhysicalDevices();
 
 		if (debug)
@@ -129,7 +114,7 @@ namespace vkInit
 		return  nullptr;
 	}
 
-	QueueFamilyIndices findQueueFamilies(vk::PhysicalDevice& device, bool debug)
+	QueueFamilyIndices findQueueFamilies(vk::PhysicalDevice& device, vk::SurfaceKHR surface, bool debug)
 	{
 		QueueFamilyIndices indices;
 
@@ -145,11 +130,20 @@ namespace vkInit
 			if (queueFamilies[i].queueFlags & vk::QueueFlagBits::eGraphics)
 			{
 				indices.graphicsFamily = i;
+
+				if (debug)
+				{
+					std::cout << "Queue family " << i << " is suitable for graphics\n";
+				}
+			}
+
+			if (device.getSurfaceSupportKHR(i, surface))
+			{
 				indices.presentFamily = i;
 
 				if (debug)
 				{
-					std::cout << "Queue family " << i << " is suitable\n";
+					std::cout << "Queue family " << i << " is suitable for presenting\n";
 				}
 			}
 
@@ -162,16 +156,31 @@ namespace vkInit
 		return indices;
 	}
 
-	vk::Device create_logical_device(vk::PhysicalDevice& physicalDevice, bool debug)
+	vk::Device create_logical_device(vk::PhysicalDevice& physicalDevice, vk::SurfaceKHR surface, bool debug)
 	{
-		QueueFamilyIndices indices = findQueueFamilies(physicalDevice, debug);
+		QueueFamilyIndices indices = findQueueFamilies(physicalDevice, surface, debug);
+		std::vector<uint32_t> uniqueIndices;
+		uniqueIndices.push_back(indices.graphicsFamily.value());
+		if (indices.graphicsFamily.value() != indices.presentFamily.value())
+		{
+			uniqueIndices.push_back(indices.presentFamily.value());
+		}
 		float queuePriority{ 1.0f };
 
-		vk::DeviceQueueCreateInfo queueCreateInfo = vk::DeviceQueueCreateInfo(
-			vk::DeviceQueueCreateFlags(),
-			indices.graphicsFamily.value(),
-			1, &queuePriority
-		);
+		std::vector<vk::DeviceQueueCreateInfo> queueCreateInfo;
+		for (uint32_t queueIndex : uniqueIndices)
+		{
+			queueCreateInfo.push_back(
+				vk::DeviceQueueCreateInfo(
+					vk::DeviceQueueCreateFlags(), queueIndex,
+					1, &queuePriority
+				)
+			);
+		}
+
+		std::vector<const char*> deviceExtensions = {
+			VK_KHR_SWAPCHAIN_EXTENSION_NAME
+		};
 
 		vk::PhysicalDeviceFeatures deviceFeatures = vk::PhysicalDeviceFeatures();
 
@@ -183,10 +192,10 @@ namespace vkInit
 		}
 
 		vk::DeviceCreateInfo deviceInfo = vk::DeviceCreateInfo(
-			vk::DeviceCreateFlags(), 
-			1, &queueCreateInfo, 
+			vk::DeviceCreateFlags(),
+			queueCreateInfo.size(), queueCreateInfo.data(),
 			enabledLayers.size(), enabledLayers.data(),
-			0, nullptr,
+			deviceExtensions.size(), deviceExtensions.data(),
 			&deviceFeatures
 		);
 
@@ -209,10 +218,72 @@ namespace vkInit
 		}
 	}
 
-	vk::Queue get_queue(vk::PhysicalDevice physicalDevice, vk::Device device, bool debug)
+	std::array<vk::Queue, 2> get_queues(vk::PhysicalDevice physicalDevice, vk::Device device, vk::SurfaceKHR surface, bool debug)
 	{
-		QueueFamilyIndices indices = findQueueFamilies(physicalDevice, debug);
+		QueueFamilyIndices indices = findQueueFamilies(physicalDevice, surface, debug);
 
-		return device.getQueue(indices.graphicsFamily.value(), 0);
+		return { {
+				device.getQueue(indices.graphicsFamily.value(), 0),
+				device.getQueue(indices.presentFamily.value(), 0)
+			} };
+	}
+
+	SwapChainSupportDetails query_swapchain_support(vk::PhysicalDevice device, vk::SurfaceKHR surface, bool debug)
+	{
+		SwapChainSupportDetails support;
+
+		support.capabilities = device.getSurfaceCapabilitiesKHR(surface);
+
+		if (debug)
+		{
+			std::cout << "Swapchain can support the following surface capabilities:\n"
+				<< "\tmin image count: " << support.capabilities.minImageCount << '\n'
+				<< "\tmax image count: " << support.capabilities.maxImageCount << '\n'
+				<< "\tcurrent extent: " << support.capabilities.currentExtent.width << 'x' << support.capabilities.currentExtent.height << '\n'
+				<< "\tmin extent: " << support.capabilities.minImageExtent.width << 'x' << support.capabilities.minImageExtent.height << '\n'
+				<< "\tmax extent: " << support.capabilities.maxImageExtent.width << 'x' << support.capabilities.maxImageExtent.height << '\n'
+				<< "\tmax image array layers: " << support.capabilities.maxImageArrayLayers << '\n';
+			
+			std::cout << "\tsupported transforms:\n";
+			std::vector<std::string> stringList = log_transform_bits(support.capabilities.supportedTransforms);
+			for (std::string line : stringList)
+			{
+				std::cout << "\t\t" << line << '\n';
+			}
+			
+			std::cout << "\tcurrent transform:\n";
+			stringList = log_transform_bits(support.capabilities.currentTransform);
+			for (std::string line : stringList)
+			{
+				std::cout << "\t\t" << line << '\n';
+			}
+
+			std::cout << "\tsupported alpha operations:\n";
+			stringList = log_alpha_composite_bits(support.capabilities.supportedCompositeAlpha);
+			for (std::string line : stringList)
+			{
+				std::cout << "\t\t" << line << '\n';
+			}
+
+			std::cout << "\tsupported image usage:\n";
+			stringList = log_image_usage_bits(support.capabilities.supportedUsageFlags);
+			for (std::string line : stringList)
+			{
+				std::cout << "\t\t" << line << '\n';
+			}
+		}
+
+		support.formats = device.getSurfaceFormatsKHR(surface);
+
+		if (debug)
+		{
+			for (vk::SurfaceFormatKHR supportedFormat : support.formats)
+			{
+				std::cout << "supported pixel format: " << vk::to_string(supportedFormat.format) << '\n';
+				std::cout << "supported color space: " << vk::to_string(supportedFormat.colorSpace) << '\n';
+			}
+		}
+
+		return support;
 	}
 }

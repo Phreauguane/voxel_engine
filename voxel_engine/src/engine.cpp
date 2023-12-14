@@ -46,13 +46,29 @@ void Engine::make_instance()
 	{
 		debugMessenger = vkInit::make_debug_messenger(instance, dldi);
 	}
+	VkSurfaceKHR c_surface;
+	if (glfwCreateWindowSurface(instance, window, nullptr, &c_surface) != VK_SUCCESS)
+	{
+		if (debugMode)
+		{
+			std::cout << "Failed to abstract GLFW surface for Vulkan\n";
+		}
+	}
+	else if (debugMode)
+	{
+		std::cout << "Successfully abstracted GLFW surface for Vulkan\n";
+	}
+	surface = c_surface;
 }
 
 void Engine::make_device()
 {
 	physicalDevice = vkInit::choose_physical_device(instance, debugMode);
-	device = vkInit::create_logical_device(physicalDevice, debugMode);
-	graphicsQueue = vkInit::get_queue(physicalDevice, device, debugMode);
+	device = vkInit::create_logical_device(physicalDevice, surface, debugMode);
+	std::array<vk::Queue, 2> queues = vkInit::get_queues(physicalDevice, device, surface, debugMode);
+	graphicsQueue = queues[0];
+	presentQueue = queues[1];
+	vkInit::query_swapchain_support(physicalDevice, surface, debugMode);
 }
 
 Engine::~Engine()
@@ -64,14 +80,17 @@ Engine::~Engine()
 	//destroy window
 	glfwDestroyWindow(window);
 
+	//destroy device
+	device.destroy();
+
+	//destroy surface
+	instance.destroySurfaceKHR(surface);
+
 	//destroy messenger
 	if (debugMode)
 	{
 		instance.destroyDebugUtilsMessengerEXT(debugMessenger, nullptr, dldi);
 	}
-
-	//destroy device
-	device.destroy();
 
 	//destroy instance
 	instance.destroy();
