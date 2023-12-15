@@ -21,6 +21,14 @@ namespace vkInit
 		std::vector<vk::PresentModeKHR> presentModes;
 	};
 
+	struct SwapChainBundle
+	{
+		vk::SwapchainKHR swapchan;
+		std::vector<vk::Image> images;
+		vk::Format format;
+		vk::Extent2D extent;
+	};
+
 	bool checkDeviceExtensionSupport(
 		const vk::PhysicalDevice& device,
 		const std::vector<const char*>& requestedExtensions,
@@ -266,7 +274,7 @@ namespace vkInit
 			}
 
 			std::cout << "\tsupported image usage:\n";
-			stringList = log_image_usage_bits(support.capabilities.supportedUsageFlags);
+			stringList = log_image_usage_bits_small(support.capabilities.supportedUsageFlags);
 			for (std::string line : stringList)
 			{
 				std::cout << "\t\t" << line << '\n';
@@ -275,15 +283,99 @@ namespace vkInit
 
 		support.formats = device.getSurfaceFormatsKHR(surface);
 
+		std::cout << "\tsupported surface formats:\n";
+
 		if (debug)
 		{
 			for (vk::SurfaceFormatKHR supportedFormat : support.formats)
 			{
-				std::cout << "supported pixel format: " << vk::to_string(supportedFormat.format) << '\n';
-				std::cout << "supported color space: " << vk::to_string(supportedFormat.colorSpace) << '\n';
+				std::cout << "\t\tpixel format: " << vk::to_string(supportedFormat.format) << '\n';
+				std::cout << "\t\tcolor space : " << vk::to_string(supportedFormat.colorSpace) << '\n';
 			}
 		}
 
+		support.presentModes = device.getSurfacePresentModesKHR(surface);
+
+		std::cout << "\tpresent modes:\n";
+
+		for (vk::PresentModeKHR presentMode : support.presentModes)
+		{
+			std::cout << "\t\t" << log_present_mode_small(presentMode) << '\n';
+		}
+
 		return support;
+	}
+
+	vk::SurfaceFormatKHR choose_swapchain_surface_format(std::vector<vk::SurfaceFormatKHR> formats)
+	{
+		for (vk::SurfaceFormatKHR format : formats)
+		{
+			if (format.format == vk::Format::eB8G8R8A8Unorm
+				&& format.colorSpace == vk::ColorSpaceKHR::eSrgbNonlinear)
+			{
+				return format;
+			}
+		}
+
+		return formats[0];
+	}
+
+	vk::PresentModeKHR choose_swapchain_present_mode(std::vector<vk::PresentModeKHR> presentModes)
+	{
+		for (vk::PresentModeKHR mode : presentModes)
+		{
+			if (mode == vk::PresentModeKHR::eMailbox)
+			{
+				return mode;
+			}
+		}
+
+		return vk::PresentModeKHR::eFifo;
+	}
+
+	vk::Extent2D choose_swapchain_extent(uint32_t width, uint32_t height, vk::SurfaceCapabilitiesKHR capabilities)
+	{
+		if (capabilities.currentExtent.width != UINT32_MAX)
+		{
+			return capabilities.currentExtent;
+		}
+		else
+		{
+			vk::Extent2D extent = { width, height };
+
+			extent.width = std::min(
+				capabilities.maxImageExtent.width,
+				std::max(capabilities.minImageExtent.width, width)
+			);
+
+			extent.height = std::min(
+				capabilities.maxImageExtent.height,
+				std::max(capabilities.minImageExtent.height, height)
+			);
+
+			return extent;
+		}
+	}
+
+	SwapChainBundle create_swapchain(vk::Device logicalDevice, vk::PhysicalDevice physicalDevice, vk::SurfaceKHR surface, int width, int height, bool debug)
+	{
+		SwapChainSupportDetails support = query_swapchain_support(physicalDevice, surface, debug);
+
+		vk::SurfaceFormatKHR format = choose_swapchain_surface_format(support.formats);
+
+		vk::PresentModeKHR presentMode = choose_swapchain_present_mode(support.presentModes);
+
+		vk::Extent2D extent = choose_swapchain_extent(width, height, support.capabilities);
+
+		uint32_t imageCount = std::min(
+			support.capabilities.maxImageCount,
+			support.capabilities.minImageCount + 1
+		);
+
+		vk::SwapchainCreateInfoKHR createInfo = vk::SwapchainCreateInfoKHR(
+			vk::SwapchainCreateFlagsKHR(), surface, imageCount,
+			format.format, format.colorSpace, extent,
+			1, vk::ImageUsageFlagBits::eColorAttachment
+		);
 	}
 }

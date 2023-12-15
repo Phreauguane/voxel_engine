@@ -68,7 +68,6 @@ void Engine::make_device()
 	std::array<vk::Queue, 2> queues = vkInit::get_queues(physicalDevice, device, surface, debugMode);
 	graphicsQueue = queues[0];
 	presentQueue = queues[1];
-	vkInit::query_swapchain_support(physicalDevice, surface, debugMode);
 }
 
 Engine::~Engine()
