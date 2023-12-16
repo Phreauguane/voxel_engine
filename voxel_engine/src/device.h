@@ -23,7 +23,7 @@ namespace vkInit
 
 	struct SwapChainBundle
 	{
-		vk::SwapchainKHR swapchan;
+		vk::SwapchainKHR swapchain;
 		std::vector<vk::Image> images;
 		vk::Format format;
 		vk::Extent2D extent;
@@ -228,7 +228,7 @@ namespace vkInit
 
 	std::array<vk::Queue, 2> get_queues(vk::PhysicalDevice physicalDevice, vk::Device device, vk::SurfaceKHR surface, bool debug)
 	{
-		QueueFamilyIndices indices = findQueueFamilies(physicalDevice, surface, debug);
+		QueueFamilyIndices indices = findQueueFamilies(physicalDevice, surface, false);
 
 		return { {
 				device.getQueue(indices.graphicsFamily.value(), 0),
@@ -377,5 +377,39 @@ namespace vkInit
 			format.format, format.colorSpace, extent,
 			1, vk::ImageUsageFlagBits::eColorAttachment
 		);
+
+		QueueFamilyIndices indices = findQueueFamilies(physicalDevice, surface, false);
+		uint32_t queueFamilyIndices[] = { indices.graphicsFamily.value(), indices.presentFamily.value() };
+
+		createInfo.imageSharingMode = vk::SharingMode::eExclusive;
+		if (queueFamilyIndices[0] != queueFamilyIndices[1])
+		{
+			createInfo.imageSharingMode = vk::SharingMode::eConcurrent;
+			createInfo.queueFamilyIndexCount = 2;
+			createInfo.pQueueFamilyIndices = queueFamilyIndices;
+		}
+
+		createInfo.preTransform = support.capabilities.currentTransform;
+		createInfo.compositeAlpha = vk::CompositeAlphaFlagBitsKHR::eOpaque;
+		createInfo.presentMode = presentMode;
+		createInfo.clipped = VK_TRUE;
+
+		createInfo.oldSwapchain = vk::SwapchainKHR(nullptr);
+
+		SwapChainBundle bundle{};
+		try
+		{
+			bundle.swapchain = logicalDevice.createSwapchainKHR(createInfo);
+		}
+		catch (vk::SystemError err)
+		{
+			throw std::runtime_error("failed to create swapchain");
+		}
+
+		bundle.images = logicalDevice.getSwapchainImagesKHR(bundle.swapchain);
+		bundle.format = format.format;
+		bundle.extent = extent;
+
+		return bundle;
 	}
 }
