@@ -2,6 +2,7 @@
 #include "instance.h"
 #include "logging.h"
 #include "device.h"
+#include "swapchain.h"
 
 Engine::Engine()
 {
@@ -70,7 +71,7 @@ void Engine::make_device()
 	presentQueue = queues[1];
 	vkInit::SwapChainBundle bundle = vkInit::create_swapchain(device, physicalDevice, surface, width, height, debugMode);
 	swapchain = bundle.swapchain;
-	swapchainImages = bundle.images;
+	swapchainFrames = bundle.frames;
 	swapchainFormat = bundle.format;
 	swapchainExtent = bundle.extent;
 }
@@ -83,6 +84,12 @@ Engine::~Engine()
 
 	//destroy window
 	glfwDestroyWindow(window);
+
+	//destroy image views
+	for (vkUtil::SwapChainFrame frame : swapchainFrames)
+	{
+		device.destroyImageView(frame.imageView);
+	}
 
 	//destroy swapchain
 	device.destroySwapchainKHR(swapchain);

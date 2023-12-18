@@ -38,5 +38,14 @@
     <ClInclude Include="src\device.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\swapchain.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\queue_families.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\frame.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

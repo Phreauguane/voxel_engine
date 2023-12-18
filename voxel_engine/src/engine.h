@@ -1,5 +1,6 @@
 #pragma once
 #include "config.h"
+#include "frame.h"
 
 class Engine {
 
@@ -31,7 +32,7 @@ private:
 	vk::Queue graphicsQueue{ nullptr };
 	vk::Queue presentQueue{ nullptr };
 	vk::SwapchainKHR swapchain;
-	std::vector<vk::Image> swapchainImages;
+	std::vector<vkUtil::SwapChainFrame> swapchainFrames{};
 	vk::Format swapchainFormat;
 	vk::Extent2D swapchainExtent;
 
