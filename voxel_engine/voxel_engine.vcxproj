@@ -146,7 +146,15 @@
     <ClInclude Include="src\instance.h" />
     <ClInclude Include="src\logging.h" />
     <ClInclude Include="src\queue_families.h" />
+    <ClInclude Include="src\shaders.h" />
     <ClInclude Include="src\swapchain.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\fragment.spv" />
+    <None Include="shaders\shader.frag" />
+    <None Include="shaders\shader_compile.bat" />
+    <None Include="shaders\shader.vert" />
+    <None Include="shaders\vertex.spv" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
