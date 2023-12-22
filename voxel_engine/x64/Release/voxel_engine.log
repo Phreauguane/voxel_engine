@@ -1,16 +1,15 @@
 ﻿  engine.cpp
-C:\Users\jules\OneDrive\Desktop\Dev\voxel_engine\voxel_engine\src\device.h(140,25): warning C4267: 'argument': conversion from 'size_t' to 'uint32_t', possible loss of data
-  (compiling source file 'src/engine.cpp')
-  
-C:\Users\jules\OneDrive\Desktop\Dev\voxel_engine\voxel_engine\src\device.h(139,22): warning C4267: 'argument': conversion from 'size_t' to 'uint32_t', possible loss of data
-  (compiling source file 'src/engine.cpp')
-  
-C:\Users\jules\OneDrive\Desktop\Dev\voxel_engine\voxel_engine\src\device.h(138,24): warning C4267: 'argument': conversion from 'size_t' to 'uint32_t', possible loss of data
-  (compiling source file 'src/engine.cpp')
-  
+C:\Users\jules\Desktop\Dev\voxel_engine\voxel_engine\src\device.h(140,25): warning C4267: 'argument': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\jules\Desktop\Dev\voxel_engine\voxel_engine\src\device.h(139,22): warning C4267: 'argument': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\jules\Desktop\Dev\voxel_engine\voxel_engine\src\device.h(138,24): warning C4267: 'argument': conversion from 'size_t' to 'uint32_t', possible loss of data
+C:\Users\jules\Desktop\Dev\voxel_engine\voxel_engine\src\pipeline.h(124,49): warning C4244: '=': conversion from 'uint32_t' to 'float', possible loss of data
+C:\Users\jules\Desktop\Dev\voxel_engine\voxel_engine\src\pipeline.h(125,50): warning C4244: '=': conversion from 'uint32_t' to 'float', possible loss of data
+C:\Users\jules\Desktop\Dev\voxel_engine\voxel_engine\src\pipeline.h(129,22): warning C4244: '=': conversion from 'float' to 'int32_t', possible loss of data
+C:\Users\jules\Desktop\Dev\voxel_engine\voxel_engine\src\pipeline.h(130,22): warning C4244: '=': conversion from 'float' to 'int32_t', possible loss of data
+C:\Users\jules\Desktop\Dev\voxel_engine\voxel_engine\src\pipeline.h(164,46): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
   Generating code
-  8 of 1424 functions ( 0.6%) were compiled, the rest were copied from previous compilation.
-    5 functions were new in current compilation
-    23 functions had inline decision re-evaluated but remain unchanged
+  12 of 1655 functions ( 0.7%) were compiled, the rest were copied from previous compilation.
+    9 functions were new in current compilation
+    34 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
-  voxel_engine.vcxproj -> C:\Users\jules\OneDrive\Desktop\Dev\voxel_engine\x64\Release\voxel_engine.exe
+  voxel_engine.vcxproj -> C:\Users\jules\Desktop\Dev\voxel_engine\x64\Release\voxel_engine.exe

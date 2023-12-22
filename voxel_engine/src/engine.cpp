@@ -3,6 +3,7 @@
 #include "logging.h"
 #include "device.h"
 #include "swapchain.h"
+#include "pipeline.h"
 
 Engine::Engine()
 {
@@ -16,6 +17,8 @@ Engine::Engine()
 	make_instance();
 
 	make_device();
+
+	make_pipeline();
 }
 
 void Engine::build_glfw_window()
@@ -76,6 +79,23 @@ void Engine::make_device()
 	swapchainExtent = bundle.extent;
 }
 
+void Engine::make_pipeline()
+{
+	vkInit::GraphicsPipelineInBundle specification = {};
+
+	specification.device = device;
+	specification.vertexFilepath = "shaders/vertex.spv";
+	specification.fragmentFilepath = "shaders/fragment.spv";
+	specification.swapchainExtent = swapchainExtent;
+	specification.swapchainFormat = swapchainFormat;
+
+	vkInit::GraphicsPipelineOutBundle output = vkInit::make_graphics_pipeline(specification, debugMode);
+
+	layout = output.layout;
+	renderpass = output.renderpass;
+	pipeline = output.pipeline;
+}
+
 Engine::~Engine()
 {
 	if (debugMode) {
@@ -90,6 +110,15 @@ Engine::~Engine()
 	{
 		device.destroyImageView(frame.imageView);
 	}
+
+	//destroy pipeline
+	device.destroyPipeline(pipeline);
+
+	//destroy renderpass
+	device.destroyRenderPass(renderpass);
+
+	//destroy layout
+	device.destroyPipelineLayout(layout);
 
 	//destroy swapchain
 	device.destroySwapchainKHR(swapchain);

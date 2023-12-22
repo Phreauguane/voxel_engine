@@ -50,6 +50,9 @@
     <ClInclude Include="src\shaders.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\pipeline.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\shader.vert" />

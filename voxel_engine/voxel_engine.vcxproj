@@ -145,6 +145,7 @@
     <ClInclude Include="src\frame.h" />
     <ClInclude Include="src\instance.h" />
     <ClInclude Include="src\logging.h" />
+    <ClInclude Include="src\pipeline.h" />
     <ClInclude Include="src\queue_families.h" />
     <ClInclude Include="src\shaders.h" />
     <ClInclude Include="src\swapchain.h" />
